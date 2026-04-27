@@ -1,17 +1,18 @@
-# Snapshot
+# Fping
 
 ## Overview  
-**Snapshot** is used to collect "show" command logs for a given set of network devices. It helps capture device states before and after migration for validation and troubleshooting.  
+**Fping** is used to collect IP addresses reachability and hostname information for a given set of IP Subnets.
 
 ## Features  
-- Runs predefined or custom "show" commands on network devices.  
-- Captures critical device information for comparison.  
-- Stores logs in an organized manner for easy access.  
+- Collect IP addresses reachability and hostname information for a given set of IP Subnets.
+- Support for both IPv4 and IPv6 addresses.
+- Output is generated in the form of excel file.
 
-## Migration Lifecycle 
+## Migration Lifecycle
+- Discovery
 - Pre-Migration 
 - Post-Migration
 
 ## Tags  
-`#NetworkLogging` `#Netmig` `#Automation` `#NetworkMigration` `#Diagnostics` `#Cisco` `#Infrastructure` `#DeviceLogs` `#ShowCommands` `#PreMigration` `#PostMigration`
+`#fping` `#discovery` `#pre-migration` `#post-migration`
 
