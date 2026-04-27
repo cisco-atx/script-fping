@@ -1,6 +1,8 @@
 """Worker logic for fping execution.
 
-This module
+This module contains the main logic for executing fping across specified subnets,
+processing the output, and generating a report based on the results. It uses
+concurrent threads to run fping in parallel for multiple subnets, and it handles the output to create a structured report in Excel format.
 
 File path: workers.py
 """
@@ -88,10 +90,6 @@ def generate_report(output_data, fqdn, filters, ctx):
                 else:
                     idx += 1
                     refactored_data[idx] = dump_data[ip_str]
-
-
-    import json
-    json.dump(refactored_data, open(os.path.join(ctx.output_dir, "fping_output.json"), "w"), indent=4)
 
     filename = f"Fping_{datetime.now():%Y-%m-%d_%H.%M}.xlsx"
     path = os.path.join(ctx.output_dir, filename)
