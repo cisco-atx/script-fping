@@ -16,7 +16,8 @@ from datetime import datetime
 from netcore import GenericHandler, XLBW
 
 
-def run_fping(subnets, fqdn, filters, connector, ctx):
+def run_fping(subnets, fqdn, stats, filters, connector, ctx):
+    """Run fping across specified subnets and generate a report."""
     output_data = {}
 
     def fping_task(subnet):
@@ -24,6 +25,7 @@ def run_fping(subnets, fqdn, filters, connector, ctx):
 
         cmd = ["fping -A"]
         if fqdn: cmd.append(fqdn)
+        if stats: cmd.append(stats)
         cmd.append(f"-g {subnet}")
 
         try:
@@ -43,11 +45,11 @@ def run_fping(subnets, fqdn, filters, connector, ctx):
     with ThreadPoolExecutor(max_workers=8) as executor:
         executor.map(fping_task, subnets)
 
-    generate_report(output_data, fqdn, filters, ctx)
+    generate_report(output_data, fqdn, stats, filters, ctx)
     ctx.log("Fping execution finished")
 
-def generate_report(output_data, fqdn, filters, ctx):
-
+def generate_report(output_data, fqdn, stats, filters, ctx):
+    """Generate an Excel report based on fping output data."""
     dump_data = {}
 
     regex_pattern = re.compile(r"^(\d+.\d+.\d+.\d+)\s+is\s+(\S+)")
@@ -91,10 +93,34 @@ def generate_report(output_data, fqdn, filters, ctx):
                     idx += 1
                     refactored_data[idx] = dump_data[ip_str]
 
+    stats_data = {}
+    if stats:
+        idx = 0
+        regex_pattern = r"\s+(\d+)\s+targets.*(\d+)\s+alive.*(\d+)\s+unreachable"
+        for subnet, output in output_data.items():
+            idx += 1
+            stats_data[idx] = {
+                    "Subnet": subnet,
+                    "Total": 0,
+                    "Alive": 0,
+                    "Unreachable": 0
+                }
+            match = re.search(regex_pattern, output, re.DOTALL)
+            if match:
+                stats_data[idx]["Total"] = int(match.group(1))
+                stats_data[idx]["Alive"] = int(match.group(2))
+                stats_data[idx]["Unreachable"] = int(match.group(3))
+
+
     filename = f"Fping_{datetime.now():%Y-%m-%d_%H.%M}.xlsx"
     path = os.path.join(ctx.output_dir, filename)
 
     wb = XLBW(path)
     ws = wb.add_worksheet("Fping")
     wb.dump(refactored_data, ws)
+    ws.autofilter(0, 0, len(refactored_data), 4)
+
+    if stats_data:
+        wb.dump(stats_data, ws, row_idx=0, col_idx=6)
+
     wb.close()
