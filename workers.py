@@ -59,13 +59,13 @@ def generate_report(output_data, fqdn, filters, ctx):
             match = regex_pattern.match(line)
             if match:
                 if fqdn:
-                    ip, hostname, status = match.groups()
+                    hostname, ip, status = match.groups()
                 else:
                     ip, status = match.groups()
                     hostname = "N/A"
 
                 dump_data[ip] = {
-                    "ip": ip,
+                    "IP": ip,
                     "Hostname": hostname,
                     "Subnet": subnet,
                     "Status": status,
