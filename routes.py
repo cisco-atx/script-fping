@@ -68,12 +68,14 @@ class FpingScript:
             return
 
         fqdn = inputs.get("fqdn", "")
+        stats = inputs.get("stats", "")
         filters = inputs.get("filters", "")
 
         try:
             run_fping(
                 subnets=subnets,
                 fqdn=fqdn,
+                stats=stats,
                 filters=filters,
                 connector=connector,
                 ctx=self.ctx,
