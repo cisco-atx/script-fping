@@ -118,9 +118,10 @@ def generate_report(output_data, fqdn, stats, filters, ctx):
     wb = XLBW(path)
     ws = wb.add_worksheet("Fping")
     wb.dump(refactored_data, ws)
-    ws.autofilter(0, 0, len(refactored_data), 4)
 
     if stats_data:
         wb.dump(stats_data, ws, row_idx=0, col_idx=6)
+
+    ws.autofilter(0, 0, len(refactored_data), 4)
 
     wb.close()
